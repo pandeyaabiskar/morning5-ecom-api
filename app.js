@@ -1,9 +1,12 @@
 const express = require('express');
 const PORT = 4000;
-const app = express();
 const productRouter = require('./routes/productRoutes')
 const cors = require('cors')
+const connectDatabase = require('./database/connection')
 
+const app = express();
+
+connectDatabase();
 app.use(cors())
 app.use(express.json())
 
