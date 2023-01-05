@@ -1,23 +1,27 @@
-const productData = require('../data/productData.json')
+const ProductModel = require('../models/ProductModel')
 
-const getAllProducts = (req, res) => {
-    const { category } = req.query;
-    if (category) {
-        const filteredProducts = productData.filter((product) => {
-            return product.category === category
-        })
-        res.json(filteredProducts)
-    } else {
-        res.json(productData)
+const getAllProducts = async (req, res) => {
+    try {
+        const { category } = req.query;
+        if (category) {
+            const filteredProducts = await ProductModel.find({ category });
+            res.json(filteredProducts)
+        } else {
+            const productData = await ProductModel.find();
+            res.json(productData)
+        }
+    } catch (err) {
+        res.status(500).json({message: err.message})
     }
 }
 
-const getSingleProduct = (req, res) => {
-    const { productID } = req.params
-    if (productID > 0 && productID <= productData.length) {
-        res.json(productData[productID - 1])
-    } else {
-        res.send("Index out of bound")
+const getSingleProduct = async (req, res) => {
+    try {
+        const { productID } = req.params
+        const productData = await ProductModel.find({ _id: productID })
+        res.json(productData)
+    }catch(err){
+        res.status(500).json({message: err.message})
     }
 }
 
