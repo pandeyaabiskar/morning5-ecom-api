@@ -7,7 +7,7 @@ const getAllProducts = async (req, res) => {
             const filteredProducts = await ProductModel.find({ category });
             res.json(filteredProducts)
         } else {
-            const productData = await ProductModel.find();
+            const productData = await ProductModel.find().limit(10);
             res.json(productData)
         }
     } catch (err) {
@@ -25,23 +25,54 @@ const getSingleProduct = async (req, res) => {
     }
 }
 
-const createProduct = (req, res) => {
-    console.log(req.body)
-    res.send("Data received successfully")
+const createProduct = async (req, res) => {
+    try {
+        // console.log(req.body)
+        //Insert into DB
+        // const product = new ProductModel(req.body)
+        // await product.save()
+
+        //Alternate Method
+        const product = await ProductModel.create(req.body)
+        res.json({id: product._id})
+    } catch (err) {
+        if (err.code === 11000) {
+            res.status(500).json({ message: "Duplicate title is not allowed" })
+        }
+        else {
+            res.status(500).json({ message: err.message })
+        }
+    }
 }
 
-const replaceProduct = (req, res) => {
-    console.log(req.body)
-    res.send("Data received successfully")
+const replaceProduct = async (req, res) => {
+    try {
+        const {productID} = req.params
+        const replacedProduct = await ProductModel.findOneAndReplace({_id:productID}, req.body, {new: true})
+        res.json({replacedProduct})
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
 }
 
-const updateProduct = (req, res) => {
-    console.log(req.body)
-    res.send("Data received successfully")
+const updateProduct = async (req, res) => {
+    try {
+        const {productID} = req.params
+        const updatedProduct = await ProductModel.findByIdAndUpdate(productID, req.body, {new: true})
+        res.json({updatedProduct})
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
 }
 
-const deleteProduct = (req, res) => {
-    
+const deleteProduct = async (req, res) => {
+    try {
+        const {productID} = req.params
+        const deletedProduct = await ProductModel.findByIdAndDelete(productID)
+        res.json({deletedProduct})
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
 }
 
 module.exports = {

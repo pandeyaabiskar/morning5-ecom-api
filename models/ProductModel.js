@@ -24,9 +24,9 @@ const productSchema = mongoose.Schema({
         unique: true,
         minlength: 100,
         maxlength: 500,
-        validate: function () {
-            return this.includes('cloth') ? true : false
-        }
+        validate: [function (value) {
+            return value.includes('cloth') ? true : false
+        }, "Cloth is not included in the title"]
     },
     price: {
         type: Number,
