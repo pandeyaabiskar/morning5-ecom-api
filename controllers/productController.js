@@ -2,9 +2,12 @@ const ProductModel = require('../models/ProductModel')
 
 const getAllProducts = async (req, res) => {
     try {
-        const { category } = req.query;
+        const { category, price } = req.query;
         if (category) {
             const filteredProducts = await ProductModel.find({ category });
+            res.json(filteredProducts)
+        } else if (price) {
+            const filteredProducts = await ProductModel.find({ price: {$gt : price} });
             res.json(filteredProducts)
         } else {
             const productData = await ProductModel.find().limit(10);
